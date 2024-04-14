@@ -1,36 +1,37 @@
+
 import pandas as pd
 
 # Read the dataset
-df = pd.read_csv("C:/Users/rekha/Downloads/Starter_Code (7)/Starter_Code/PyBank/Resources/budget_data.csv")
+df = pd.read_csv("C:/Users/rekha/Downloads/Starter_Code (7)/Starter_Code/PyPoll/Resources/election_data.csv")
 
-# Display the total number of months
-total_months = len(df)
-print("Total number of months:", total_months)
+# Calculate the total number of votes cast
+total_votes = df["Ballot ID"].count()
+print("Total number of votes cast:", total_votes)
 
-# Calculate the net total amount of "Profit/Losses"
-net_profit_losses = df["Profit/Losses"].sum()
-print("Net total amount of Profit/Losses:", net_profit_losses)
+# Get a list of unique candidates who received votes
+candidates = df["Candidate"].unique()
 
-# Calculate the changes in Profit/Losses over the entire period
-df["Change"] = df["Profit/Losses"].diff()
+# Initialize a dictionary to store the total number of votes for each candidate
+candidate_votes = {}
 
-# Calculate the average of those changes
-average_change = df["Change"].mean()
-print("Average of changes in Profit/Losses:", average_change)
+# Iterate through each candidate and count their votes
+for candidate in candidates:
+    candidate_votes[candidate] = df[df["Candidate"] == candidate]["Ballot ID"].count()
 
-# Find the greatest increase in profits (date and amount) over the entire period
-greatest_increase = df[df["Change"] == df["Change"].max()]
-greatest_increase_date = greatest_increase["Date"].values[0]
-greatest_increase_amount = greatest_increase["Change"].values[0]
-print("Greatest increase in profits:")
-print("Date:", greatest_increase_date)
-print("Amount:", greatest_increase_amount)
+# Print the complete list of candidates who received votes and the total number of votes each candidate won
+print("Complete list of candidates who received votes and their total number of votes:")
+for candidate, votes in candidate_votes.items():
+    print(f"{candidate}: {votes} votes")
 
-# Find the greatest decrease in profits (date and amount) over the entire period
-greatest_decrease = df[df["Change"] == df["Change"].min()]
-greatest_decrease_date = greatest_decrease["Date"].values[0]
-greatest_decrease_amount = greatest_decrease["Change"].values[0]
-print("Greatest decrease in profits:")
-print("Date:", greatest_decrease_date)
-print("Amount:", greatest_decrease_amount)
+# Calculate the percentage of votes each candidate won
+candidate_percentages = {candidate: (votes / total_votes) * 100 for candidate, votes in candidate_votes.items()}
+
+# Print the percentage of votes each candidate won
+print("\nPercentage of votes each candidate won:")
+for candidate, percentage in candidate_percentages.items():
+    print(f"{candidate}: {percentage:.2f}%")
+
+# Determine the winner of the election based on popular vote
+winner = max(candidate_votes, key=candidate_votes.get)
+print("\nWinner of the election based on popular vote:", winner)
 
